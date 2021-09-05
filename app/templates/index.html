@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block titulo %}Bienvenido{% endblock %}
+
+{% block contenido %}
+<div class="container">
+    <div class="row">
+        <div class="col-4 text-start">
+            <h3>Coding Dojo Wall!</h3>
+        </div>
+        <div class="col-8 text-end">
+            <div class="col">
+                <h5 class="text-capitalize">Bienvenid@: {{request.session.usuario.name}}</h5>
+            </div>
+            <div class="col">
+                <a href="/logout">Log off</a>
+            </div>
+        </div>
+        <hr size="5px" color="black" />
+    </div>
+
+    <div class="row mt-3">
+        <h4>Postea tu Mensaje:</h4>
+        <form action="procesar_mensaje/" method="POST">
+            {% csrf_token %}
+            <div class="col-8 mt-5 form-floating">
+                <textarea class="form-control" name="men" style="height: 100px"></textarea>
+            </div>
+            <div class="col-8 text-end">
+                <button type="submit" class="btn btn-success mt-3">Postear Mensaje</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="row ">
+        {% for m in mensajes %}
+        <h4 class="text-capitalize text-primary">{{m.user_m}} - {{m.created_at |date:"d F Y H:i" }}, escribio:</h4>
+        <h4 >{{m.message}}</h4>
+        <div class="col-2">
+            {% if m.user_m.id == request.session.usuario.id %}
+            <a class="btn btn-warning" href="eliminar_mensaje/{{m.id}}">Eliminar Comentario</a>
+            {%endif%}
+        </div>
+    </div>
+        <div class="row mt-3 offset-lg-1">
+            {% for c in m.comments.all %} 
+            <h5 class="text-capitalize text-secondary">{{c.user_c.name}} - {{c.created_at |date:"d F Y H:i" }}, comento:</h5>
+            <h5>{{c.comment}}</h5>
+            <div class="col-2">
+                {% if c.user_c.id == request.session.usuario.id %}
+                <a class="btn btn-warning" href="eliminar_comentario/{{c.id}}">Eliminar Comentario</a>
+                {%endif%}
+            </div>
+            {%endfor%}
+        </div>
+            
+    <div class="row mt-3">
+        <h5>Comentar:</h5>
+        <form action="procesar_comentario/" method="POST">
+            {% csrf_token %}
+            <div class="col-8 mt-2 form-floating">
+                <textarea class="form-control" name="comment" style="height: 100px"></textarea>
+                <input type="hidden" name="men_id" value="{{m.id}}">
+            </div>
+            <div class="col-8 text-end">
+                <button type="submit" class="btn btn-primary mt-3">Postear Comentario</button>
+            </div>
+        </form>
+        {%endfor%}
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block libreria %}
+{% endblock %}
